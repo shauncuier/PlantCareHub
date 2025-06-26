@@ -5,15 +5,12 @@ import {
     FaLeaf,
     FaSearch,
     FaFilter,
-    FaSort,
     FaEye,
     FaWater,
     FaSun,
     FaCalendarAlt,
     FaUser,
     FaSpinner,
-    FaSortUp,
-    FaSortDown,
     FaTag
 } from 'react-icons/fa';
 
@@ -23,13 +20,19 @@ const AllPlants = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedCareLevel, setSelectedCareLevel] = useState('');
-    const [sortBy, setSortBy] = useState('name');
-    const [sortOrder, setSortOrder] = useState('asc');
+    const [selectedOwner, setSelectedOwner] = useState('');
+    const [selectedWatering, setSelectedWatering] = useState('');
+    const [selectedAddedYear, setSelectedAddedYear] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 15;
 
     const categories = ['succulent', 'fern', 'flowering', 'tropical', 'herbs', 'indoor', 'outdoor'];
     const careLevels = ['easy', 'moderate', 'difficult'];
+
+    // For filter dropdowns
+    const owners = Array.from(new Set(plants.map(p => p.userName).filter(Boolean)));
+    const wateringFrequencies = Array.from(new Set(plants.map(p => p.wateringFrequency).filter(Boolean)));
+    const addedYears = Array.from(new Set(plants.map(p => p.addedDate ? new Date(p.addedDate).getFullYear() : null).filter(Boolean)));
 
     useEffect(() => {
         fetchPlants();
@@ -47,17 +50,7 @@ const AllPlants = () => {
         }
     };
 
-    const handleSort = (field) => {
-        if (sortBy === field) {
-            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-        } else {
-            setSortBy(field);
-            setSortOrder('asc');
-        }
-        setCurrentPage(1);
-    };
-
-    // Filter and sort plants
+    // Filter plants
     const filteredPlants = plants
         .filter(plant => {
             const normalizedSearch = (searchTerm ?? '').toLowerCase();
@@ -66,45 +59,10 @@ const AllPlants = () => {
                 (plant.description ?? '').toLowerCase().includes(normalizedSearch);
             const matchesCategory = !selectedCategory || plant.category === selectedCategory;
             const matchesCareLevel = !selectedCareLevel || plant.careLevel === selectedCareLevel;
-            return matchesSearch && matchesCategory && matchesCareLevel;
-        })
-        .sort((a, b) => {
-            let comparison = 0;
-            
-            switch (sortBy) {
-                case 'name':
-                    comparison = (a.name ?? '').localeCompare(b.name ?? '');
-                    break;
-                case 'category':
-                    comparison = (a.category ?? '').localeCompare(b.category ?? '');
-                    break;
-                case 'wateringFrequency':
-                    comparison = (a.wateringFrequency ?? '').localeCompare(b.wateringFrequency ?? '');
-                    break;
-                case 'careLevel': {
-                    const levels = { easy: 1, moderate: 2, difficult: 3 };
-                    const levelA = levels[a.careLevel?.toLowerCase()] ?? 0;
-                    const levelB = levels[b.careLevel?.toLowerCase()] ?? 0;
-                    comparison = levelA - levelB;
-                    break;
-                }
-                case 'nextWatering': {
-                    const dateA = a.nextWatering ? new Date(a.nextWatering).getTime() : 0;
-                    const dateB = b.nextWatering ? new Date(b.nextWatering).getTime() : 0;
-                    comparison = dateA - dateB;
-                    break;
-                }
-                case 'addedDate': {
-                    const addedA = a.addedDate ? new Date(a.addedDate).getTime() : 0;
-                    const addedB = b.addedDate ? new Date(b.addedDate).getTime() : 0;
-                    comparison = addedB - addedA; // Newest first by default
-                    break;
-                }
-                default:
-                    comparison = 0;
-            }
-            
-            return sortOrder === 'asc' ? comparison : -comparison;
+            const matchesOwner = !selectedOwner || plant.userName === selectedOwner;
+            const matchesWatering = !selectedWatering || plant.wateringFrequency === selectedWatering;
+            const matchesAddedYear = !selectedAddedYear || (plant.addedDate && new Date(plant.addedDate).getFullYear().toString() === selectedAddedYear);
+            return matchesSearch && matchesCategory && matchesCareLevel && matchesOwner && matchesWatering && matchesAddedYear;
         });
 
     // Pagination
@@ -134,16 +92,10 @@ const AllPlants = () => {
         setSearchTerm('');
         setSelectedCategory('');
         setSelectedCareLevel('');
-        setSortBy('name');
-        setSortOrder('asc');
+        setSelectedOwner('');
+        setSelectedWatering('');
+        setSelectedAddedYear('');
         setCurrentPage(1);
-    };
-
-    const SortIcon = ({ field }) => {
-        if (sortBy !== field) return <FaSort className="text-gray-400" />;
-        return sortOrder === 'asc' ? 
-            <FaSortUp className="text-green-500" /> : 
-            <FaSortDown className="text-green-500" />;
     };
 
     if (loading) {
@@ -223,6 +175,57 @@ const AllPlants = () => {
                                 ))}
                             </select>
                         </div>
+
+                        {/* Owner Filter */}
+                        <div className="relative">
+                            <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <select
+                                value={selectedOwner}
+                                onChange={(e) => setSelectedOwner(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white appearance-none"
+                            >
+                                <option value="">All Owners</option>
+                                {owners.map(owner => (
+                                    <option key={owner} value={owner}>
+                                        {owner}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Watering Frequency Filter */}
+                        <div className="relative">
+                            <FaWater className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400" />
+                            <select
+                                value={selectedWatering}
+                                onChange={(e) => setSelectedWatering(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white appearance-none"
+                            >
+                                <option value="">All Watering</option>
+                                {wateringFrequencies.map(wf => (
+                                    <option key={wf} value={wf}>
+                                        {wf}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Added Year Filter */}
+                        <div className="relative">
+                            <FaCalendarAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400" />
+                            <select
+                                value={selectedAddedYear}
+                                onChange={(e) => setSelectedAddedYear(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white appearance-none"
+                            >
+                                <option value="">All Years</option>
+                                {addedYears.map(year => (
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row justify-between items-center">
@@ -240,139 +243,54 @@ const AllPlants = () => {
                     </div>
                 </div>
 
-                {/* Plants Table */}
+                {/* Card Grid */}
                 {paginatedPlants.length > 0 ? (
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mb-8">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 dark:bg-gray-700">
-                                    <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Plant
-                                        </th>
-                                        <th 
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
-                                            onClick={() => handleSort('name')}
-                                        >
-                                            <div className="flex items-center space-x-1">
-                                                <span>Plant Name</span>
-                                                <SortIcon field="name" />
-                                            </div>
-                                        </th>
-                                        <th 
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
-                                            onClick={() => handleSort('category')}
-                                        >
-                                            <div className="flex items-center space-x-1">
-                                                <span>Category</span>
-                                                <SortIcon field="category" />
-                                            </div>
-                                        </th>
-                                        <th 
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
-                                            onClick={() => handleSort('wateringFrequency')}
-                                        >
-                                            <div className="flex items-center space-x-1">
-                                                <span>Watering Frequency</span>
-                                                <SortIcon field="wateringFrequency" />
-                                            </div>
-                                        </th>
-                                        <th 
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
-                                            onClick={() => handleSort('careLevel')}
-                                        >
-                                            <div className="flex items-center space-x-1">
-                                                <span>Care Level</span>
-                                                <SortIcon field="careLevel" />
-                                            </div>
-                                        </th>
-                                        <th 
-                                            className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
-                                            onClick={() => handleSort('nextWatering')}
-                                        >
-                                            <div className="flex items-center space-x-1">
-                                                <span>Next Watering</span>
-                                                <SortIcon field="nextWatering" />
-                                            </div>
-                                        </th>
-                                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Added By
-                                        </th>
-                                        <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Actions
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    {paginatedPlants.map((plant) => {
-                                        const careLevel = getCareLevel(plant.careLevel);
-                                        
-                                        return (
-                                            <tr key={plant._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center">
-                                                        <img
-                                                            src={plant.image}
-                                                            alt={plant.name}
-                                                            className="w-12 h-12 rounded-lg object-cover"
-                                                        />
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                                        {plant.name || 'Unnamed Plant'}
-                                                    </div>
-                                                    {plant.description && (
-                                                        <div className="text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                                                            {plant.description}
-                                                        </div>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
-                                                        <FaTag className="mr-1" />
-                                                        {plant.category || 'Uncategorized'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center text-sm text-gray-900 dark:text-white">
-                                                        <FaWater className="mr-2 text-blue-500" />
-                                                        {plant.wateringFrequency || 'Not specified'}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${careLevel.bg} ${careLevel.color}`}>
-                                                        <FaSun className="mr-1" />
-                                                        {plant.careLevel ? plant.careLevel.charAt(0).toUpperCase() + plant.careLevel.slice(1) : 'Easy'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center text-sm text-gray-900 dark:text-white">
-                                                        <FaCalendarAlt className="mr-2 text-orange-500" />
-                                                        {formatDate(plant.nextWatering)}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                                                        <FaUser className="mr-2" />
-                                                        {plant.userName || 'Plant Lover'}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-center">
-                                                    <Link
-                                                        to={`/plants/${plant._id}`}
-                                                        className="inline-flex items-center bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors duration-200"
-                                                    >
-                                                        <FaEye className="mr-1" />
-                                                        View Details
-                                                    </Link>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        {paginatedPlants.map((plant) => {
+                            const careLevel = getCareLevel(plant.careLevel);
+                            return (
+                                <div key={plant._id} className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col">
+                                    <img
+                                        src={plant.image}
+                                        alt={plant.name}
+                                        className="w-full h-40 object-cover rounded-lg mb-4"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="text-lg font-bold text-gray-900 dark:text-white mb-1">{plant.name || 'Unnamed Plant'}</div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">{plant.description}</div>
+                                        <div className="flex flex-wrap gap-2 mb-2">
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                                                <FaTag className="mr-1" />
+                                                {plant.category || 'Uncategorized'}
+                                            </span>
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${careLevel.bg} ${careLevel.color}`}>
+                                                <FaSun className="mr-1" />
+                                                {plant.careLevel ? plant.careLevel.charAt(0).toUpperCase() + plant.careLevel.slice(1) : 'Easy'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center text-xs text-gray-700 dark:text-gray-300 mb-2">
+                                            <FaWater className="mr-1 text-blue-500" />
+                                            {plant.wateringFrequency || 'Not specified'}
+                                        </div>
+                                        <div className="flex items-center text-xs text-gray-700 dark:text-gray-300 mb-2">
+                                            <FaCalendarAlt className="mr-1 text-orange-500" />
+                                            {formatDate(plant.nextWatering)}
+                                        </div>
+                                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                            <FaUser className="mr-1" />
+                                            {plant.userName || 'Plant Lover'}
+                                        </div>
+                                    </div>
+                                    <Link
+                                        to={`/plants/${plant._id}`}
+                                        className="mt-3 inline-flex items-center bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors duration-200 justify-center"
+                                    >
+                                        <FaEye className="mr-1" />
+                                        View Details
+                                    </Link>
+                                </div>
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-16 text-center">
