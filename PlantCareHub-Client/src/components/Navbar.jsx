@@ -38,18 +38,21 @@ const Navbar = () => {
         }
     };
 
-    const navItems = [
-        { to: '/', label: 'Home' },
-        { to: '/plants', label: 'All Plants' },
-        ...(user ? [
-            { to: '/my-plants', label: 'My Plants' },
-            { to: '/add-plant', label: 'Add Plant' }
-        ] : [])
-    ];
+const navItems = [
+    { to: '/', label: 'Home' },
+    { to: '/plants', label: 'All Items' },
+    { to: '/about', label: 'About Us' },
+    { to: '/contact', label: 'Contact' },
+    { to: '/support', label: 'Support' },
+    // Dashboard private route only after login
+    ...(user ? [
+        { to: '/dashboard', label: 'Dashboard' }
+    ] : [])
+];
 
     return (
-        <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 dark:bg-gray-900/80 dark:border-gray-700 sticky top-0 z-50 transition-all duration-300">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="bg-gradient-to-r from-green-500 to-emerald-600 border-b border-green-600 sticky top-0 z-50 transition-all duration-300">
+            <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
                     <Link to="/" className="flex items-center space-x-2 group">
@@ -98,20 +101,19 @@ const Navbar = () => {
                         {/* User Actions */}
                         {user ? (
                             <div className="relative group">
-                                <button className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
+                                <button className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none" tabIndex={0}>
                                     <img
                                         src={user.photoURL}
                                         alt="Profile"
                                         className="w-8 h-8 rounded-full border-2 border-green-500"
                                     />
-                                    <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        {user.displayName}
-                                    </span>
                                 </button>
-                                
                                 {/* Dropdown Menu */}
-                                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                                    <div className="py-1">
+                                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200">
+                                    <div className="py-2 flex flex-col items-center">
+                                        <span className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            {user.displayName}
+                                        </span>
                                         <button
                                             onClick={handleLogout}
                                             className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
