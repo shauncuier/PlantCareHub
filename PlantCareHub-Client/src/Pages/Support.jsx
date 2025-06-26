@@ -1,5 +1,10 @@
 import React from "react";
 
+/**
+ * Support page component.
+ * Provides FAQ and contact information for user support.
+ * Follows industry standards for clarity and maintainability.
+ */
 const Support = () => (
   <div className="max-w-4xl mx-auto py-16 px-4 bg-white dark:bg-gray-900 rounded-2xl shadow-lg">
     <h1 className="text-3xl font-bold mb-4 text-green-700 dark:text-green-300">Support</h1>

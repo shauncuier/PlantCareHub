@@ -1,3 +1,9 @@
+/**
+ * AllPlants page component.
+ * Displays a searchable, filterable, and paginated list of all plants.
+ * Implements category, care level, owner, watering, and year filters.
+ * Uses best practices for React state, effects, and UI structure.
+ */
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import axios from 'axios';

@@ -1,5 +1,11 @@
+/**
+ * DashboardOverview page component.
+ * Shows summary statistics for the dashboard: total items, user items, and user info.
+ * Fetches data from the backend and displays in a responsive grid.
+ * Implements best practices for React state, effects, and UI structure.
+ */
 import React, { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../auth/AuthProvider";
+import { AuthContext } from "../auth/AuthContext.js";
 import axios from "axios";
 import { FaList, FaUser, FaSeedling } from "react-icons/fa";
 
@@ -15,7 +21,7 @@ const DashboardOverview = () => {
       .catch(() => setTotalItems(0));
     // Fetch my items
     if (user?.uid) {
-      axios.get(`${import.meta.env.VITE_API_URL}/my-plants?userId=${user.uid}`)
+      axios.get(`${import.meta.env.VITE_API_URL}/plants?userId=${user.uid}`)
         .then(res => setMyItems(res.data.length))
         .catch(() => setMyItems(0));
     }

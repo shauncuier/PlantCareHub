@@ -1,6 +1,12 @@
+/**
+ * MyPlants page component.
+ * Displays and manages the user's personal plant collection.
+ * Supports viewing, deleting, and updating plants.
+ * Implements best practices for React state, effects, and UI structure.
+ */
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { AuthContext } from '../auth/AuthProvider';
+import { AuthContext } from '../auth/AuthContext.js';
 import { Link } from 'react-router';
 import Swal from 'sweetalert2';
 import { 
@@ -26,13 +32,10 @@ const MyPlants = () => {
         const fetchMyPlants = async () => {
             if (!user?.uid) return;
 
-            console.log("Fetching plants for user:", user.uid);
-
             try {
                 const res = await axios.get(
                     `${import.meta.env.VITE_API_URL}/plants?userId=${user.uid}`
                 );
-                console.log("Fetched plants:", res.data);
                 setPlants(res.data);
             } catch (error) {
                 console.error('Error fetching my plants:', error);

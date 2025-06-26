@@ -1,6 +1,12 @@
+/**
+ * DashboardMyItems page component.
+ * Displays a table of the user's items in the dashboard.
+ * Fetches user-specific plant data and renders in a responsive table.
+ * Implements best practices for React state, effects, and UI structure.
+ */
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { AuthContext } from "../auth/AuthProvider";
+import { AuthContext } from "../auth/AuthContext.js";
 
 const DashboardMyItems = () => {
   const { user } = useContext(AuthContext);

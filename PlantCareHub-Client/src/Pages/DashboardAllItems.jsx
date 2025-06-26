@@ -1,3 +1,9 @@
+/**
+ * DashboardAllItems page component.
+ * Displays all plant items in an admin view for the dashboard.
+ * Fetches all plant data and renders in a responsive card grid.
+ * Implements best practices for React state, effects, and UI structure.
+ */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaEye, FaTag, FaUser, FaWater, FaSun, FaCalendarAlt } from "react-icons/fa";

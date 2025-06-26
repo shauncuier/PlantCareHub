@@ -1,7 +1,13 @@
+/**
+ * AddPlants page component.
+ * Provides a detailed form for users to add new plants to the collection.
+ * Handles form state, validation, and submission to the backend.
+ * Implements best practices for React state, effects, and UI structure.
+ */
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router';
 import axios from 'axios';
-import { AuthContext } from '../auth/AuthProvider';
+import { AuthContext } from '../auth/AuthContext.js';
 import Swal from 'sweetalert2';
 import {
     FaLeaf,

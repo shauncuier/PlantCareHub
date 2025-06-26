@@ -1,6 +1,12 @@
+/**
+ * DashboardAddItem page component.
+ * Provides a form for users to add new plant items to their collection.
+ * Handles form state, validation, and submission to the backend.
+ * Implements best practices for React state and UI structure.
+ */
 import React, { useContext, useState } from "react";
 import axios from "axios";
-import { AuthContext } from "../auth/AuthProvider";
+import { AuthContext } from "../auth/AuthContext.js";
 
 const DashboardAddItem = () => {
   const { user } = useContext(AuthContext);

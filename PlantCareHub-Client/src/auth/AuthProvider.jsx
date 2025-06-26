@@ -1,10 +1,9 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { AuthContext } from './AuthContext.js';
 import { auth } from '../Firebase/firebase.config';  // your firebase config file
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import Swal from 'sweetalert2';
 
-// Create Context
-export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
-import { AuthContext } from '../auth/AuthProvider';
+import { AuthContext } from '../auth/AuthContext.js';
 import { ThemeContext } from '../Context/ThemeContext';
 import { auth } from '../Firebase/firebase.config';
 import { signOut } from 'firebase/auth';

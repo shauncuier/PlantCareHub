@@ -1,3 +1,11 @@
+/**
+ * PlantCareHub Server
+ * Node.js + Express backend for PlantCareHub application.
+ * - Connects to MongoDB for plant data storage.
+ * - Provides RESTful API endpoints for CRUD operations on plants.
+ * - Handles CORS, JSON parsing, and environment configuration.
+ * - Follows industry best practices for error handling and structure.
+ */
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
